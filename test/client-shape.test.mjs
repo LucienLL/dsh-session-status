@@ -242,6 +242,7 @@ test('StatusPill 的 pill 单击接入循环（nextSessionStatus 接线，非死
 })
 
 test('hover 卡状态注入接线（renderAll 把插件状态追加进 portal 卡内容列）', () => {
+  // 默认语言是英文；本测试断言中文文案，工厂加载后（见下方 setLang）切到 zh。
   // 伪造 DOM：一张 portal 的会话 hover 卡（role=button + 内联 left/top 定位 + 标题行）
   const fakeEl = () => {
     const el = {
@@ -287,6 +288,7 @@ test('hover 卡状态注入接线（renderAll 把插件状态追加进 portal �
   }
   vm.createContext(sandbox)
   vm.runInContext(code, sandbox)
+  captured.__statusUtils.setLang('zh')
 
   const subs = []
   const scopeCalls = []
@@ -369,6 +371,7 @@ test('hover 卡状态注入接线（renderAll 把插件状态追加进 portal �
 })
 
 test('设置页内置标签改色接线（swatch 写 overrides、恢复默认清除）', () => {
+  // 默认语言是英文；本测试断言中文文案，工厂加载后切到 zh。
   const reactMock = {
     createElement(type, props, ...children) { return { type, props: props || {}, children } },
     useState(init) { return [init, () => {}] },
@@ -398,6 +401,7 @@ test('设置页内置标签改色接线（swatch 写 overrides、恢复默认清
   }
   vm.createContext(sandbox)
   vm.runInContext(code, sandbox)
+  captured.__statusUtils.setLang('zh')
 
   let settingsRenderer = null
   const scopeCalls = []
@@ -473,4 +477,20 @@ test('设置页内置标签改色接线（swatch 写 overrides、恢复默认清
   assert.ok(hexInputs.length >= 2, '新增表单与自定义行都应有 hex 输入')
 
   console.log('client-shape builtin-override wiring OK')
+})
+
+test('i18n：默认英文，zh 环境切中文（builtin 名与 pill 文案）', () => {
+  const u = captured.__statusUtils
+  u.setLang('en')
+  assert.equal(u.getLang(), 'en')
+  const active = u.resolveLabels({})[0]
+  assert.equal(u.displayName(active), 'In progress')
+  assert.equal(u.t('unsetStatus'), 'No status')
+  assert.ok(u.t('pillTitleSet').includes('Set session status'))
+  u.setLang('zh')
+  assert.equal(u.displayName(active), '进行中')
+  assert.equal(u.t('unsetStatus'), '未设置状态')
+  // 还原为默认，避免影响其他测试
+  u.setLang('en')
+  console.log('client-shape i18n OK')
 })
