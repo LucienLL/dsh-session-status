@@ -1,6 +1,6 @@
 {
   "name": "dsh-session-status",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "给每个 DSH 对话设置项目状态标签（进行中/已结项/搁置中 + 自定义），会话列表最小可见，对话内头部角落可切换，跨会话/跨浏览器持久化",
   "type": "module",
   "main": "lib/index.js",
