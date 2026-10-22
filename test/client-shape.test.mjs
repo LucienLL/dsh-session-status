@@ -36,7 +36,7 @@ test('bundle factory 执行并导出契约形状', () => {
       throw new Error(`inject "${s}" looks like a package name; must be a service name`)
     }
   }
-  for (const required of ['slots', 'settingsScope', 'sessions']) {
+  for (const required of ['slots', 'configForms', 'sessions']) {
     assert.ok(inject.includes(required), `inject must include "${required}"`)
   }
   assert.equal(typeof apply, 'function', 'apply must be a function')
@@ -178,14 +178,14 @@ test('StatusPill 的 pill 单击接入循环（nextSessionStatus 接线，非死
   let scopeSnapshot = { status: 'ready', value: { sessions: { s1: 'active' } } }
   const scopeCalls = []
   const scopeMock = {
-    bind() { return scopeMock },
+    get() { return scopeMock },
     subscribe() { return () => {} },
     getSnapshot() { return scopeSnapshot },
     set(key, value) { scopeCalls.push([key, value]) },
     unset(key) { scopeCalls.push([key, 'UNSET']) },
   }
   const ctx = {
-    settingsScope: { bind() { return scopeMock } },
+    configForms: { get() { return scopeMock } },
     sessions: { list: { subscribe() { return () => {} }, getSnapshot() { return { phase: 'ready', ids: ['s1'] } } } },
     slots: {
       inject(name, fn) {
@@ -292,14 +292,14 @@ test('hover 卡状态注入接线（renderAll 把插件状态追加进 portal �
   const scopeCalls = []
   const scopeSnapshot = { status: 'ready', value: { sessions: { s1: 'active' } } }
   const scopeMock = {
-    bind() { return scopeMock },
+    get() { return scopeMock },
     subscribe(cb) { subs.push(cb); return () => {} },
     getSnapshot() { return scopeSnapshot },
     set(key, value) { scopeCalls.push([key, value]) },
     unset(key) { scopeCalls.push([key, 'UNSET']) },
   }
   const ctx = {
-    settingsScope: { bind() { return scopeMock } },
+    configForms: { get() { return scopeMock } },
     sessions: {
       list: {
         subscribe() { return () => {} },
@@ -333,7 +333,7 @@ test('hover 卡状态注入接线（renderAll 把插件状态追加进 portal �
   container.children.length = 0
   scopeSnapshot.value.sessions = { s1: 'active' }
   const dupCtx = {
-    settingsScope: { bind() { return scopeMock } },
+    configForms: { get() { return scopeMock } },
     sessions: {
       list: {
         subscribe() { return () => {} },
@@ -352,12 +352,12 @@ test('hover 卡状态注入接线（renderAll 把插件状态追加进 portal �
     effect() {},
   }
   const scopeMock2 = {
-    bind() { return scopeMock2 },
+    get() { return scopeMock2 },
     subscribe() { return () => {} },
     getSnapshot() { return scopeSnapshot },
     set() {}, unset() {},
   }
-  dupCtx.settingsScope = { bind() { return scopeMock2 } }
+  dupCtx.configForms = { get() { return scopeMock2 } }
   const subs2 = []
   scopeMock2.subscribe = (cb) => { subs2.push(cb); return () => {} }
   const before = container.children.length
@@ -403,14 +403,14 @@ test('设置页内置标签改色接线（swatch 写 overrides、恢复默认清
   const scopeCalls = []
   const scopeSnapshot = { status: 'ready', value: { labels: [], sessions: {} } }
   const scopeMock = {
-    bind() { return scopeMock },
+    get() { return scopeMock },
     subscribe() { return () => {} },
     getSnapshot() { return scopeSnapshot },
     set(key, value) { scopeCalls.push([key, value]) },
     unset(key) { scopeCalls.push([key, 'UNSET']) },
   }
   const ctx = {
-    settingsScope: { bind() { return scopeMock } },
+    configForms: { get() { return scopeMock } },
     sessions: { list: { subscribe() { return () => {} }, getSnapshot() { return { phase: 'ready', ids: [], byId: {} } } } },
     slots: {
       inject(name, fn) {
